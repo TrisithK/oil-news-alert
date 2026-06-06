@@ -1,0 +1,53 @@
+# Two processes share one Postgres: the API (serves the web app + SSE) and,
+# from Phase 1, the worker (scheduler + ingest + analysis + alert dispatch).
+# Keeping them separate means the UI never blocks on the pipeline.
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: oilalert
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d oilalert"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      # Container talks to Postgres over the compose network (`db` host).
+      DATABASE_URL: postgresql+psycopg://app:app@db:5432/oilalert
+      API_BEARER_TOKEN: ${API_BEARER_TOKEN:-devtoken}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      TRIAGE_MODEL: ${TRIAGE_MODEL:-claude-haiku-4-5-20251001}
+      EXTRACT_MODEL: ${EXTRACT_MODEL:-claude-sonnet-4-6}
+      OPUS_MODEL: ${OPUS_MODEL:-claude-opus-4-8}
+      EIA_API_KEY: ${EIA_API_KEY:-}
+      NEWSDATA_API_KEY: ${NEWSDATA_API_KEY:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_DEFAULT_CHAT_ID: ${TELEGRAM_DEFAULT_CHAT_ID:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      ALERT_FROM_EMAIL: ${ALERT_FROM_EMAIL:-}
+      INGEST_INTERVAL_SEC: ${INGEST_INTERVAL_SEC:-600}
+      MAX_ITEMS_PER_CYCLE: ${MAX_ITEMS_PER_CYCLE:-50}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
