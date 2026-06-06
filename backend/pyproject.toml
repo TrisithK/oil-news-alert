@@ -15,17 +15,20 @@ dependencies = [
     "psycopg[binary]>=3.1",
     "pydantic>=2.6",
     "pydantic-settings>=2.2",
+    "httpx>=0.27",
+    "feedparser>=6.0",
+    "apscheduler>=3.10",
+    "tenacity>=8.2",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
-    "httpx>=0.27",
     "ruff>=0.5",
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["app"]
+packages = ["app", "worker"]
 
 [tool.ruff]
 line-length = 100

@@ -24,7 +24,7 @@ makemigration: ## Autogenerate a migration: make makemigration m="message"
 	$(COMPOSE) run --rm api alembic revision --autogenerate -m "$(m)"
 
 test: ## Run the test suite
-	$(COMPOSE) run --rm --no-deps api pytest
+	$(COMPOSE) run --rm api pytest
 
 lint: ## Lint with ruff
 	$(COMPOSE) run --rm --no-deps api ruff check .
@@ -32,10 +32,16 @@ lint: ## Lint with ruff
 fmt: ## Auto-format with ruff
 	$(COMPOSE) run --rm --no-deps api ruff format .
 
-ingest: ## Run one ingest+analyze cycle (implemented in Phase 1)
-	@echo "ingest: implemented in Phase 1"
+seed: ## Seed the source rows (GDELT + RSS + EIA)
+	$(COMPOSE) run --rm api python -m worker.seeds
+
+ingest: ## Run one ingest cycle (GDELT + RSS + EIA) once
+	$(COMPOSE) run --rm api python -m worker.run_ingest
+
+worker: ## Start the continuous ingestion worker (APScheduler)
+	$(COMPOSE) --profile worker up -d --build worker
 
 demo: ## Replay a curated escalation event (implemented in Phase 6)
 	@echo "demo: implemented in Phase 6"
 
-.PHONY: help up down logs build migrate makemigration test lint fmt ingest demo
+.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest worker demo

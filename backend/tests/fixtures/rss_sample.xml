@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>OilPrice Sample Feed</title>
+    <link>https://oilprice.com</link>
+    <language>en-us</language>
+    <item>
+      <title>Brent crude jumps on Middle East supply fears</title>
+      <link>https://oilprice.com/article/brent-jumps</link>
+      <description>&lt;p&gt;Brent rose 3% as traders priced in supply risk.&lt;/p&gt;</description>
+      <pubDate>Wed, 15 Jan 2025 14:30:00 GMT</pubDate>
+      <guid>oilprice-brent-jumps</guid>
+    </item>
+    <item>
+      <title>Refinery outage on the US Gulf Coast trims run rates</title>
+      <link>https://oilprice.com/article/refinery-outage</link>
+      <description>An unplanned outage cut throughput at a major refinery.</description>
+      <pubDate>Wed, 15 Jan 2025 13:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

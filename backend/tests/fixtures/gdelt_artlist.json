@@ -1,0 +1,38 @@
+{
+  "articles": [
+    {
+      "url": "https://example-wire.com/hormuz-tensions",
+      "url_mobile": "",
+      "title": "Tankers diverted as tensions flare near Strait of Hormuz",
+      "seendate": "20250115T143000Z",
+      "socialimage": "",
+      "domain": "example-wire.com",
+      "language": "English",
+      "sourcecountry": "United Kingdom",
+      "tone": "-3.5"
+    },
+    {
+      "url": "https://example-news.com/opec-cut",
+      "title": "OPEC+ signals deeper output cuts at weekend meeting",
+      "seendate": "20250115T140000Z",
+      "domain": "example-news.com",
+      "language": "English",
+      "sourcecountry": "Austria",
+      "tone": "1.2"
+    },
+    {
+      "url": "",
+      "title": "Item with no URL should be skipped",
+      "seendate": "20250115T139000Z",
+      "domain": "example-blog.com"
+    },
+    {
+      "url": "https://example-news.com/bad-date",
+      "title": "Oil steady ahead of inventory data",
+      "seendate": "20250115T990000Z",
+      "domain": "example-news.com",
+      "language": "English",
+      "sourcecountry": "United States"
+    }
+  ]
+}

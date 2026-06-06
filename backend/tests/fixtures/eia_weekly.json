@@ -1,0 +1,21 @@
+{
+  "response": {
+    "total": 2,
+    "data": [
+      {
+        "period": "2025-01-10",
+        "series": "WCESTUS1",
+        "series-description": "Weekly U.S. Ending Stocks excluding SPR of Crude Oil",
+        "value": "415000",
+        "units": "thousand barrels"
+      },
+      {
+        "period": "2025-01-03",
+        "series": "WCESTUS1",
+        "series-description": "Weekly U.S. Ending Stocks excluding SPR of Crude Oil",
+        "value": "418200",
+        "units": "thousand barrels"
+      }
+    ]
+  }
+}

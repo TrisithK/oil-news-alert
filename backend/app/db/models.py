@@ -118,9 +118,7 @@ class Analysis(Base):
     article: Mapped[Article] = relationship(back_populates="analyses")
     alerts: Mapped[list[Alert]] = relationship(back_populates="analysis")
 
-    __table_args__ = (
-        Index("ix_analyses_importance_created", "importance_score", "created_at"),
-    )
+    __table_args__ = (Index("ix_analyses_importance_created", "importance_score", "created_at"),)
 
 
 class Config(Base):
