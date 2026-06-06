@@ -1,0 +1,32 @@
+{"title": "Tankers reroute as military tensions flare in the Strait of Hormuz", "relevant": true, "category": "shipping_chokepoint", "direction": "bullish"}
+{"title": "OPEC+ agrees to deeper voluntary output cuts at weekend meeting", "relevant": true, "category": "opec_supply_decision", "direction": "bullish"}
+{"title": "OPEC+ to raise production quotas, unwinding earlier cuts", "relevant": true, "category": "opec_supply_decision", "direction": "bearish"}
+{"title": "EU adopts new sanctions package targeting Russian crude exports", "relevant": true, "category": "sanctions_embargo", "direction": "bullish"}
+{"title": "US eases oil sanctions on Venezuela, allowing more exports", "relevant": true, "category": "sanctions_embargo", "direction": "bearish"}
+{"title": "Fire breaks out at major US Gulf Coast refinery, cutting run rates", "relevant": true, "category": "supply_outage", "direction": "bullish"}
+{"title": "Israel and Iran exchange missile strikes, oil risk premium jumps", "relevant": true, "category": "geopolitics_conflict", "direction": "bullish"}
+{"title": "Ceasefire deal reached in the Middle East, easing oil supply fears", "relevant": true, "category": "geopolitics_conflict", "direction": "bearish"}
+{"title": "EIA reports surprise crude oil inventory draw of 5 million barrels", "relevant": true, "category": "inventory_data", "direction": "bullish"}
+{"title": "EIA weekly data shows large crude oil build of 7 million barrels", "relevant": true, "category": "inventory_data", "direction": "bearish"}
+{"title": "Fed signals further interest rate hikes as the dollar strengthens", "relevant": true, "category": "macro_monetary", "direction": "bearish"}
+{"title": "China crude oil imports slump on weak refining demand", "relevant": true, "category": "demand_signal", "direction": "bearish"}
+{"title": "US announces release from the Strategic Petroleum Reserve", "relevant": true, "category": "strategic_reserves", "direction": "bearish"}
+{"title": "US shale oil output rises to a record, lifting production", "relevant": true, "category": "production_exports", "direction": "bearish"}
+{"title": "Arctic cold snap boosts heating oil and diesel demand", "relevant": true, "category": "weather", "direction": "bullish"}
+{"title": "Analyst note speculates oil prices could rise on thin liquidity", "relevant": true, "category": "rumor_opinion", "direction": "unclear"}
+{"title": "Houthi attack strikes an oil tanker in the Red Sea", "relevant": true, "category": "shipping_chokepoint", "direction": "bullish"}
+{"title": "Russian crude exports rise despite the G7 price cap", "relevant": true, "category": "production_exports", "direction": "bearish"}
+{"title": "IEA cuts its 2026 global oil demand growth forecast", "relevant": true, "category": "demand_signal", "direction": "bearish"}
+{"title": "Iran seizes an oil tanker near the Strait of Hormuz", "relevant": true, "category": "shipping_chokepoint", "direction": "bullish"}
+{"title": "Pipeline sabotage in Nigeria halts crude oil output", "relevant": true, "category": "supply_outage", "direction": "bullish"}
+{"title": "OPEC+ extends voluntary production cuts through the second quarter", "relevant": true, "category": "opec_supply_decision", "direction": "bullish"}
+{"title": "Drone strike hits a Russian refinery, cutting processing capacity", "relevant": true, "category": "supply_outage", "direction": "bullish"}
+{"title": "US imposes fresh sanctions on an Iranian oil shipping network", "relevant": true, "category": "sanctions_embargo", "direction": "bullish"}
+{"title": "Brent slips as China demand worries mount", "relevant": true, "category": "demand_signal", "direction": "bearish"}
+{"title": "Hurricane forces evacuation of Gulf of Mexico oil platforms", "relevant": true, "category": "supply_outage", "direction": "bullish"}
+{"title": "Saudi Aramco lifts crude output following OPEC+ decision to raise quotas", "relevant": true, "category": "opec_supply_decision", "direction": "bearish"}
+{"title": "Premier League transfer rumours dominate the weekend sports roundup", "relevant": false, "direction": null}
+{"title": "Apple unveils its next-generation iPhone at autumn launch event", "relevant": false, "direction": null}
+{"title": "Local school board approves the annual education budget", "relevant": false, "direction": null}
+{"title": "Bitcoin surges past $100,000 in a record crypto rally", "relevant": false, "direction": null}
+{"title": "Tech stocks lead Wall Street to a record high close", "relevant": false, "direction": null}

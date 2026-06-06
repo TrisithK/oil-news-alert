@@ -38,10 +38,16 @@ seed: ## Seed the source rows (GDELT + RSS + EIA)
 ingest: ## Run one ingest cycle (GDELT + RSS + EIA) once
 	$(COMPOSE) run --rm api python -m worker.run_ingest
 
+analyze: ## Analyze un-analyzed articles (prefilter -> triage -> extract -> score)
+	$(COMPOSE) run --rm api python -m worker.run_analyze
+
+eval: ## Run the golden-set evaluation harness
+	$(COMPOSE) run --rm api python -m eval.run_eval
+
 worker: ## Start the continuous ingestion worker (APScheduler)
 	$(COMPOSE) --profile worker up -d --build worker
 
 demo: ## Replay a curated escalation event (implemented in Phase 6)
 	@echo "demo: implemented in Phase 6"
 
-.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest worker demo
+.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest analyze eval worker demo
