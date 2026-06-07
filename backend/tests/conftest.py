@@ -60,3 +60,33 @@ def db_session(engine: Engine) -> Iterator[Session]:
             session.execute(table.delete())
         session.commit()
         session.close()
+
+
+@pytest.fixture()
+def api_client(engine: Engine) -> Iterator[TestClient]:
+    """TestClient whose get_db points at the test database, pre-authenticated."""
+    from app.api.deps import get_db
+
+    factory = sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
+
+    def _override_get_db() -> Iterator[Session]:
+        db = factory()
+        try:
+            yield db
+        finally:
+            db.close()
+
+    app.dependency_overrides[get_db] = _override_get_db
+    client = TestClient(app)
+    client.headers.update({"Authorization": f"Bearer {settings.api_bearer_token}"})
+    try:
+        yield client
+    finally:
+        app.dependency_overrides.clear()
+        cleanup = factory()
+        try:
+            for table in reversed(Base.metadata.sorted_tables):
+                cleanup.execute(table.delete())
+            cleanup.commit()
+        finally:
+            cleanup.close()
