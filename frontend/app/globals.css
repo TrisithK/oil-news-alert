@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ink-950 text-slate-200 antialiased;
+  }
+}
+
+@keyframes flash {
+  0% {
+    background-color: rgba(56, 189, 248, 0.16);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-flash {
+  animation: flash 1.8s ease-out;
+}
+
+/* thin scrollbars for a denser, terminal feel */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #26323f transparent;
+}
