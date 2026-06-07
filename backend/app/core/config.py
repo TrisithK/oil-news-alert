@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     ingest_interval_sec: int = 600
     max_items_per_cycle: int = 50
 
+    # --- Alerting ---
+    alert_cooldown_sec: int = 1800  # event-level dedup window (spec §7)
+
     # --- Logging ---
     log_level: str = "INFO"
 
