@@ -1,0 +1,86 @@
+# Render blueprint — deploy the whole system from a connected GitHub repo.
+# Render → New → Blueprint → pick this repo. See DEPLOY.md for the full walkthrough.
+#
+# Free-tier note: the database, API, and frontend are free-eligible. The always-on worker
+# (continuous ingest→analyze→alert) needs a paid instance — keep it, OR delete it and trigger
+# ingestion with an external cron hitting POST /api/ingest/run (see DEPLOY.md).
+
+databases:
+  - name: oilnews-db
+    plan: free
+    postgresMajorVersion: "15"
+
+services:
+  # --- API (REST + SSE) -----------------------------------------------------
+  - type: web
+    name: oilnews-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /healthz
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # Runs before each deploy goes live: apply migrations and seed sources + default config.
+    preDeployCommand: alembic upgrade head && python -m worker.seeds
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: oilnews-db
+          property: connectionString
+      - key: API_BEARER_TOKEN
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*" # tighten to your web origin once the frontend URL is known
+      - key: ANTHROPIC_API_KEY
+        sync: false # set in the dashboard to go live with real models (optional)
+      - key: EIA_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_DEFAULT_CHAT_ID
+        sync: false
+
+  # --- Worker (continuous ingest → analyze → alert) -------------------------
+  # Requires a paid instance type. For a fully-free deploy, delete this service and use an
+  # external cron to POST /api/ingest/run periodically (see DEPLOY.md).
+  - type: worker
+    name: oilnews-worker
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    startCommand: python -m worker.scheduler
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: oilnews-db
+          property: connectionString
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: EIA_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_DEFAULT_CHAT_ID
+        sync: false
+      - key: INGEST_INTERVAL_SEC
+        value: "900"
+
+  # --- Frontend (static export) ---------------------------------------------
+  - type: web
+    name: oilnews-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: out
+    envVars:
+      # Set to the API's URL after its first deploy (e.g. https://oilnews-api.onrender.com),
+      # then trigger a redeploy so it bakes into the static build.
+      - key: NEXT_PUBLIC_API_BASE
+        sync: false
+      # Same shared bearer token as the API (auth-lite; visible client-side by design).
+      - key: NEXT_PUBLIC_API_TOKEN
+        fromService:
+          type: web
+          name: oilnews-api
+          envVarKey: API_BEARER_TOKEN

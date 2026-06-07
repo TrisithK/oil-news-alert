@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -37,6 +38,9 @@ class Settings(BaseSettings):
 
     # --- API ---
     api_bearer_token: str = "devtoken"
+    # Comma-separated allowed origins for CORS. "*" (default) allows any — safe here because the
+    # API authenticates with a bearer header, not cookies. Tighten to your web origin in prod.
+    cors_origins: str = "*"
 
     # --- Worker / scheduler ---
     ingest_interval_sec: int = 600
@@ -47,6 +51,22 @@ class Settings(BaseSettings):
 
     # --- Logging ---
     log_level: str = "INFO"
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def _normalize_db_url(cls, value: str) -> str:
+        # Managed Postgres (e.g. Render/Heroku) hands out postgres:// or postgresql://;
+        # SQLAlchemy + psycopg3 needs the explicit driver in the scheme.
+        if isinstance(value, str):
+            for prefix in ("postgresql://", "postgres://"):
+                if value.startswith(prefix):
+                    return "postgresql+psycopg://" + value[len(prefix) :]
+        return value
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        origins = [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+        return origins or ["*"]
 
 
 settings = Settings()

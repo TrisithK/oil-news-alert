@@ -157,7 +157,14 @@ overwriting a chat id you set in the Config UI). `make demo` then pings Telegram
 | `make web` | Run the Next.js web app |
 | `make llm-check` | Verify the live Anthropic key (one cheap call) |
 | `make telegram-test` | Send a test Telegram message |
-| `make test` / `make lint` | Run pytest (67 tests) / ruff |
+| `make test` / `make lint` | Run pytest (71 tests) / ruff |
+
+## Deploy
+
+A [`render.yaml`](./render.yaml) blueprint deploys the whole system (managed Postgres + API +
+optional worker + static frontend) from a connected GitHub repo — see [DEPLOY.md](./DEPLOY.md). The
+API is production-hardened (env-driven CORS, managed-DB URL handling, migrations + seed on deploy);
+the frontend is a static export. It ports to Fly.io / a VPS too (plain Docker + static files).
 
 ---
 
@@ -221,7 +228,7 @@ oil-news-alert/
 │  │              notifier, engine, feedback) · scheduler · run_* entrypoints
 │  ├─ eval/       golden_set.jsonl + run_eval.py
 │  ├─ scripts/    replay_demo.py
-│  └─ tests/      67 tests (unit + DB-backed + API integration)
+│  └─ tests/      71 tests (unit + DB-backed + API integration)
 └─ frontend/      Next.js + Tailwind: app/ (feed, alerts, config, sources, stats),
                   components/, lib/ (typed api client, SSE, formatting)
 ```
@@ -273,5 +280,5 @@ automatically and no trades are placed or recommended.
 ## Build status
 
 All phases complete: scaffold · ingestion · analysis pipeline + eval · alerting · REST/SSE API ·
-web app · demo. **67 tests, ruff-clean.** Verified end-to-end on live data (the Strait-of-Hormuz /
+web app · demo. **71 tests, ruff-clean.** Verified end-to-end on live data (the Strait-of-Hormuz /
 Iran / OPEC cluster surfaces as the top-importance bullish-Brent signals).

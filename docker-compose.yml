@@ -10,6 +10,7 @@ x-app-env: &app-env
   # Containers talk to Postgres over the compose network (`db` host).
   DATABASE_URL: postgresql+psycopg://app:app@db:5432/oilalert
   API_BEARER_TOKEN: ${API_BEARER_TOKEN:-devtoken}
+  CORS_ORIGINS: ${CORS_ORIGINS:-*}
   ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
   TRIAGE_MODEL: ${TRIAGE_MODEL:-claude-haiku-4-5-20251001}
   EXTRACT_MODEL: ${EXTRACT_MODEL:-claude-sonnet-4-6}

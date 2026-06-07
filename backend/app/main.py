@@ -12,6 +12,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
+from app.core.config import settings
 from app.core.logging import setup_logging
 
 setup_logging()
@@ -34,11 +35,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Permissive CORS for the local Next.js dev server; tighten for production.
+# Origins are env-driven (CORS_ORIGINS); defaults to "*" for local dev. Auth is a bearer header,
+# not cookies, so credentials are off — which keeps "*" valid.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=settings.cors_origin_list,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
