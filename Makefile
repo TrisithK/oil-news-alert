@@ -44,10 +44,13 @@ analyze: ## Analyze un-analyzed articles (prefilter -> triage -> extract -> scor
 eval: ## Run the golden-set evaluation harness
 	$(COMPOSE) run --rm api python -m eval.run_eval
 
+alert: ## Backfill alerts for relevant analyses (match -> dedup -> deliver)
+	$(COMPOSE) run --rm api python -m worker.run_alerting
+
 worker: ## Start the continuous ingestion worker (APScheduler)
 	$(COMPOSE) --profile worker up -d --build worker
 
 demo: ## Replay a curated escalation event (implemented in Phase 6)
 	@echo "demo: implemented in Phase 6"
 
-.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest analyze eval worker demo
+.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest analyze eval alert worker demo

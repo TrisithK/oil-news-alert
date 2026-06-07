@@ -8,6 +8,7 @@ and the stats panel can account for filtered volume.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from time import perf_counter
 
 from sqlalchemy import exists, select
@@ -146,9 +147,17 @@ def analyze_article(session: Session, llm: LLMClient, article: Article) -> Analy
 
 
 def run_analyze_once(
-    session: Session, llm: LLMClient, *, limit: int | None = None
+    session: Session,
+    llm: LLMClient,
+    *,
+    limit: int | None = None,
+    on_analysis: Callable[[Session, Analysis], None] | None = None,
 ) -> dict[str, int]:
-    """Analyze all articles that don't yet have an Analysis row."""
+    """Analyze all articles that don't yet have an Analysis row.
+
+    ``on_analysis`` (e.g. the alerting engine) is invoked after each analysis is persisted,
+    keeping the pipeline itself decoupled from alerting.
+    """
     stmt = (
         select(Article)
         .where(~exists().where(Analysis.article_id == Article.id))
@@ -169,5 +178,10 @@ def run_analyze_once(
             counts["filtered"] += 1
         else:
             counts["discarded"] += 1
+        if on_analysis is not None:
+            try:
+                on_analysis(session, analysis)
+            except Exception:
+                log.exception("on_analysis hook failed for analysis=%s", analysis.id)
     log.info("Analysis cycle complete: %s", counts)
     return counts

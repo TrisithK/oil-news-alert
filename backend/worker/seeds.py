@@ -7,9 +7,12 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.models import Source
+from app.core.config import settings
+from app.db.models import Config, Source, User
 
 log = logging.getLogger(__name__)
+
+DEMO_USER_EMAIL = "demo@oildesk.example"
 
 # (name, kind, url, reliability_tier, poll_interval_sec)
 SEED_SOURCES: list[tuple[str, str, str, str, int]] = [
@@ -67,6 +70,39 @@ def seed_sources(session: Session) -> int:
     return created
 
 
+def seed_demo_config(session: Session) -> None:
+    """Ensure a demo trader + a default alert config exist (idempotent)."""
+    user = session.execute(select(User).where(User.email == DEMO_USER_EMAIL)).scalar_one_or_none()
+    if user is None:
+        user = User(email=DEMO_USER_EMAIL, name="Demo Trader", role="trader")
+        session.add(user)
+        session.flush()
+
+    existing = session.execute(
+        select(Config).where(Config.user_id == user.id, Config.name == "default")
+    ).scalar_one_or_none()
+    if existing is None:
+        session.add(
+            Config(
+                user_id=user.id,
+                name="default",
+                min_importance=70.0,
+                instruments=None,  # all instruments
+                categories=None,  # all categories
+                keywords=None,
+                channels={
+                    "in_app": True,
+                    "telegram_chat_id": settings.telegram_default_chat_id or None,
+                    "email": settings.alert_from_email or None,
+                },
+                quiet_hours=None,
+                enabled=True,
+            )
+        )
+    session.commit()
+    log.info("Seeded demo user + default config")
+
+
 def main() -> None:
     from app.core.logging import setup_logging
     from app.db.base import SessionLocal
@@ -74,6 +110,7 @@ def main() -> None:
     setup_logging()
     with SessionLocal() as session:
         seed_sources(session)
+        seed_demo_config(session)
 
 
 if __name__ == "__main__":
