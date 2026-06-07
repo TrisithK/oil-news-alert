@@ -70,6 +70,21 @@ def seed_sources(session: Session) -> int:
     return created
 
 
+def _filled_channels(existing: dict | None) -> dict:
+    """Default channels, filling Telegram/email from settings only when not already set.
+
+    This makes the system turnkey: drop TELEGRAM_DEFAULT_CHAT_ID / ALERT_FROM_EMAIL into .env and
+    re-run, and the default config picks them up — without clobbering values a trader set in the UI.
+    """
+    channels = dict(existing or {})
+    channels.setdefault("in_app", True)
+    if settings.telegram_default_chat_id and not channels.get("telegram_chat_id"):
+        channels["telegram_chat_id"] = settings.telegram_default_chat_id
+    if settings.alert_from_email and not channels.get("email"):
+        channels["email"] = settings.alert_from_email
+    return channels
+
+
 def seed_demo_config(session: Session) -> None:
     """Ensure a demo trader + a default alert config exist (idempotent)."""
     user = session.execute(select(User).where(User.email == DEMO_USER_EMAIL)).scalar_one_or_none()
@@ -90,15 +105,13 @@ def seed_demo_config(session: Session) -> None:
                 instruments=None,  # all instruments
                 categories=None,  # all categories
                 keywords=None,
-                channels={
-                    "in_app": True,
-                    "telegram_chat_id": settings.telegram_default_chat_id or None,
-                    "email": settings.alert_from_email or None,
-                },
+                channels=_filled_channels(None),
                 quiet_hours=None,
                 enabled=True,
             )
         )
+    else:
+        existing.channels = _filled_channels(existing.channels)
     session.commit()
     log.info("Seeded demo user + default config")
 

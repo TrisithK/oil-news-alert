@@ -61,9 +61,7 @@ CURATED: list[dict[str, str]] = [
 
 
 def _demo_source(session) -> Source:
-    src = session.execute(
-        select(Source).where(Source.name == "Demo Replay")
-    ).scalar_one_or_none()
+    src = session.execute(select(Source).where(Source.name == "Demo Replay")).scalar_one_or_none()
     if src is None:
         src = Source(
             name="Demo Replay",

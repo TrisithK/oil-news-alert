@@ -56,4 +56,10 @@ demo: ## Replay a curated Strait-of-Hormuz escalation (watch the UI light up)
 web: ## Run the Next.js web app (http://localhost:3000)
 	cd frontend && npm install && npm run dev
 
-.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest analyze eval alert worker demo web
+llm-check: ## Verify the live Anthropic LLM wiring (one cheap call if a key is set)
+	$(COMPOSE) run --rm api python -m scripts.check_llm
+
+telegram-test: ## Send a test Telegram message (needs TELEGRAM_BOT_TOKEN; CHAT=<id> optional)
+	$(COMPOSE) run --rm api python -m scripts.send_test_telegram $(CHAT)
+
+.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest analyze eval alert worker demo web llm-check telegram-test

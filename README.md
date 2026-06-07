@@ -102,6 +102,46 @@ Health: `curl localhost:8000/healthz`. OpenAPI docs: http://localhost:8000/docs
 For continuous operation, `make worker` runs the scheduler (ingest → analyze → alert every
 `INGEST_INTERVAL_SEC`).
 
+## Going live — real LLM + Telegram
+
+Both are optional; the system runs fully offline without them. Add your own credentials to `.env`
+(it's gitignored — never commit secrets) and re-run `make up` so the containers pick up the new
+environment.
+
+**Real Anthropic models** (Haiku triage + Sonnet extraction):
+
+```bash
+# .env
+ANTHROPIC_API_KEY=sk-ant-...      # from https://console.anthropic.com -> API Keys
+```
+
+```bash
+make up           # recreate containers with the key
+make llm-check    # one cheap Haiku call to confirm the wiring  -> "LLM wiring OK ✓"
+make analyze      # now classifies with the real two-tier models
+```
+
+The two-tier design keeps this cheap: the keyword prefilter and Haiku triage drop most volume for
+near-nothing, and only survivors reach Sonnet.
+
+**Telegram alerts** (the live "ping" in the demo):
+
+```bash
+# .env  — create a bot with @BotFather (/newbot) for the token
+TELEGRAM_BOT_TOKEN=123456:ABC...
+TELEGRAM_DEFAULT_CHAT_ID=         # optional; or pass CHAT=<id> to telegram-test
+```
+
+```bash
+make up                       # recreate containers
+make telegram-test            # sends a test message (find your chat id via getUpdates)
+make telegram-test CHAT=12345 # ...or test a specific chat id
+```
+
+Once `TELEGRAM_DEFAULT_CHAT_ID` is set, `make analyze` / `make worker` route matching alerts to
+Telegram automatically (the default config picks the chat id up on the next run, without
+overwriting a chat id you set in the Config UI). `make demo` then pings Telegram live.
+
 ## Make targets
 
 | Target | Purpose |
@@ -115,7 +155,9 @@ For continuous operation, `make worker` runs the scheduler (ingest → analyze �
 | `make eval` | Golden-set evaluation (precision/recall + direction) |
 | `make demo` | Replay the curated escalation event |
 | `make web` | Run the Next.js web app |
-| `make test` / `make lint` | Run pytest (65 tests) / ruff |
+| `make llm-check` | Verify the live Anthropic key (one cheap call) |
+| `make telegram-test` | Send a test Telegram message |
+| `make test` / `make lint` | Run pytest (67 tests) / ruff |
 
 ---
 
@@ -179,7 +221,7 @@ oil-news-alert/
 │  │              notifier, engine, feedback) · scheduler · run_* entrypoints
 │  ├─ eval/       golden_set.jsonl + run_eval.py
 │  ├─ scripts/    replay_demo.py
-│  └─ tests/      65 tests (unit + DB-backed + API integration)
+│  └─ tests/      67 tests (unit + DB-backed + API integration)
 └─ frontend/      Next.js + Tailwind: app/ (feed, alerts, config, sources, stats),
                   components/, lib/ (typed api client, SSE, formatting)
 ```
@@ -231,5 +273,5 @@ automatically and no trades are placed or recommended.
 ## Build status
 
 All phases complete: scaffold · ingestion · analysis pipeline + eval · alerting · REST/SSE API ·
-web app · demo. **65 tests, ruff-clean.** Verified end-to-end on live data (the Strait-of-Hormuz /
+web app · demo. **67 tests, ruff-clean.** Verified end-to-end on live data (the Strait-of-Hormuz /
 Iran / OPEC cluster surfaces as the top-importance bullish-Brent signals).
