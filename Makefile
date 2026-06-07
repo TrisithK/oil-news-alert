@@ -50,7 +50,10 @@ alert: ## Backfill alerts for relevant analyses (match -> dedup -> deliver)
 worker: ## Start the continuous ingestion worker (APScheduler)
 	$(COMPOSE) --profile worker up -d --build worker
 
-demo: ## Replay a curated escalation event (implemented in Phase 6)
-	@echo "demo: implemented in Phase 6"
+demo: ## Replay a curated Strait-of-Hormuz escalation (watch the UI light up)
+	$(COMPOSE) run --rm api python -m scripts.replay_demo
 
-.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest analyze eval alert worker demo
+web: ## Run the Next.js web app (http://localhost:3000)
+	cd frontend && npm install && npm run dev
+
+.PHONY: help up down logs build migrate makemigration test lint fmt seed ingest analyze eval alert worker demo web
