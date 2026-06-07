@@ -19,9 +19,10 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /healthz
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
-    # Runs before each deploy goes live: apply migrations and seed sources + default config.
-    preDeployCommand: alembic upgrade head && python -m worker.seeds
+    # Free tier doesn't support preDeployCommand, and a docker service can't use startCommand, so
+    # run migrations + seed sources/default config at container start, then launch uvicorn on $PORT.
+    # All steps are idempotent. dockerCommand overrides the Dockerfile CMD.
+    dockerCommand: sh -c "alembic upgrade head && python -m worker.seeds && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
